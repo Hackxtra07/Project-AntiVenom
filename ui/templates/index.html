@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntiVenom Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap">
+    <style>
+        :root {
+            --bg-color: #05070a;
+            --accent-color: #00f2ff;
+            --danger-color: #ff2b2b;
+            --warning-color: #ff9d00;
+            --success-color: #00ff88;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(0, 242, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(to bottom, #05070a 0%, #0a0d14 100%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            background: rgba(5, 7, 10, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--accent-color);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: #fff;
+            margin: 0;
+        }
+
+        .edition-badge {
+            background: linear-gradient(90deg, var(--accent-color), #bc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        #status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--success-color);
+            background: rgba(0, 255, 136, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--card-border);
+            padding: 2rem;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            background: rgba(0, 242, 255, 0.02);
+            border-color: rgba(0, 242, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8a8d91;
+        }
+
+        .stat-card p {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 1rem 0 0;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .layout-main {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .alerts-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .alerts-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .alert-item {
+            display: grid;
+            grid-template-columns: 4px 1fr auto;
+            align-items: center;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--card-border);
+        }
+
+        .severity-bar {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .CRITICAL { background: var(--danger-color); box-shadow: 0 0 15px var(--danger-color); }
+        .WARNING { background: var(--warning-color); }
+        .INFO { background: var(--success-color); }
+
+        .alert-content {
+            padding: 0 20px;
+        }
+
+        .alert-message {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .alert-time {
+            font-size: 0.75rem;
+            color: #5c6269;
+        }
+
+        .sidebar-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-card h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #8a8d91;
+            margin: 0 0 1rem 0;
+        }
+
+        .engine-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .engine-label { font-size: 0.85rem; }
+        .engine-val { font-size: 0.85rem; color: var(--success-color); font-weight: 600; }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .scanning-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-color);
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon"></div>
+            <div>
+                <h1>ANTIVENOM</h1>
+                <div class="edition-badge">Professional Industrial Edition</div>
+            </div>
+        </div>
+        <div id="status">
+            <div class="scanning-indicator"></div>
+            DEFENSE SHIELD ACTIVE
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Analyzed</h3>
+                <p id="total-scanned">1,402</p>
+            </div>
+            <div class="stat-card">
+                <h3>Threats Blocked</h3>
+                <p id="threats-count" style="color: var(--danger-color);">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Ransomware Shards</h3>
+                <p id="quarantine-count" style="color: var(--warning-color);">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>System Integrity</h3>
+                <p id="integrity-pct" style="color: var(--success-color);">100%</p>
+            </div>
+        </div>
+
+        <div class="layout-main">
+            <div class="main-content">
+                <div class="sidebar-card" style="margin-bottom: 2rem; background: rgba(0, 242, 255, 0.05); border: 2px solid var(--accent-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0; color: var(--accent-color); font-family: 'Orbitron';">FORCE COMMAND: ENDPOINT ISOLATION</h4>
+                            <p id="host-info" style="font-size: 0.8rem; margin: 5px 0 0 0; color: #8a8d91;">Loading host identity...</p>
+                        </div>
+                        <button id="isolate-btn" onclick="toggleIsolation()" style="background: var(--danger-color); border: none; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; box-shadow: 0 0 15px rgba(255, 43, 43, 0.3);">ACTIVATE ISOLATION</button>
+                    </div>
+                    <div id="isolation-status" style="display: none; margin-top: 15px; padding: 10px; background: rgba(255, 43, 43, 0.1); border: 1px solid var(--danger-color); border-radius: 8px; font-size: 0.75rem; color: var(--danger-color); font-weight: 600;">
+                        ⚠ HOST ISOLATED: ALL NETWORK TELEMETRY SEVERED EXCEPT EDR COMMAND CHANNEL.
+                    </div>
+                </div>
+
+                <div class="alerts-section">
+                    <div class="alerts-header">
+                        <h2>Threat Mitigation Log</h2>
+                        <button onclick="clearAlerts()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #8a8d91; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">Purge Logs</button>
+                    </div>
+                    <div id="alerts-list">
+                        {% for alert in alerts %}
+                        <div class="alert-item">
+                            <div class="severity-bar {{ alert.severity }}"></div>
+                            <div class="alert-content">
+                                <div class="alert-message">{{ alert.message }}</div>
+                                <div class="alert-time">{{ alert.timestamp }}</div>
+                                {% if alert.details and alert.details.forensics %}
+                                <div class="alert-forensics" style="font-size: 0.75rem; color: var(--warning-color); margin-top: 4px; font-family: monospace;">{{ alert.details.forensics }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <aside>
+                <div class="sidebar-card">
+                    <h4>Engine Status</h4>
+                    <div class="engine-status">
+                        <span class="engine-label">YARA Signature</span>
+                        <span class="engine-val">ONLINE</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">AI Heuristic</span>
+                        <span class="engine-val">ACTIVE</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">Ransomware Shield</span>
+                        <span class="engine-val">ARMED</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">Behavioral Monitor</span>
+                        <span class="engine-val">MONITORING</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h4>Protection Matrix</h4>
+                    <div class="engine-status">
+                        <span class="engine-label">Kernel Sensor</span>
+                        <span class="engine-val" style="color: var(--accent-color);">DETACHED</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">1-Click Rollback</span>
+                        <span class="engine-val" style="color: var(--accent-color);">STANDBY</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">Sandbox Engine</span>
+                        <span class="engine-val" style="color: var(--accent-color);">READY</span>
+                    </div>
+                    <div class="engine-status">
+                        <span class="engine-label">Network IDS</span>
+                        <span class="engine-val" style="color: var(--accent-color);">ACTIVE</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h4>System Insights</h4>
+                    <p style="font-size: 0.8rem; color: #8a8d91; line-height: 1.6;">
+                        AntiVenom Industrial Edition is currently securing your workstation using the latest Behavioral AI and YARA Signature heuristics.
+                    </p>
+                    <button onclick="triggerOptimization()" style="width: 100%; margin-top: 15px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">RUN SYSTEM OPTIMIZATION</button>
+                    <p id="opt-status" style="font-size: 0.75rem; color: var(--success-color); margin-top: 8px; text-align: center; display: none;">Optimization Complete.</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket(`ws://${location.host}/ws`);
+        const alertsList = document.getElementById('alerts-list');
+        let currentHost = null;
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.is_command && data.command === 'ISOLATE') {
+                updateIsolationUI(data.enabled);
+            } else {
+                addAlert(data);
+            }
+        };
+
+        async function initFleet() {
+            try {
+                const response = await fetch('/api/hosts');
+                const hosts = await response.json();
+                if (hosts.length > 0) {
+                    currentHost = hosts[0];
+                    document.getElementById('host-info').innerText = `ID: ${currentHost.uuid} | Host: ${currentHost.hostname} | IP: ${currentHost.ip_address}`;
+                    updateIsolationUI(currentHost.is_isolated === 1);
+                }
+            } catch (e) {
+                console.error("Fleet init error:", e);
+            }
+        }
+
+        function updateIsolationUI(isIsolated) {
+            const btn = document.getElementById('isolate-btn');
+            const banner = document.getElementById('isolation-status');
+            const headStatus = document.getElementById('status');
+            
+            if (isIsolated) {
+                btn.innerText = "DEACTIVATE ISOLATION";
+                btn.style.background = "var(--success-color)";
+                banner.style.display = "block";
+                headStatus.style.color = "var(--danger-color)";
+                headStatus.style.background = "rgba(255, 43, 43, 0.1)";
+                headStatus.style.borderColor = "var(--danger-color)";
+                headStatus.innerHTML = '<div class="scanning-indicator" style="background: var(--danger-color); box-shadow: 0 0 10px var(--danger-color);"></div> HOST ISOLATED';
+            } else {
+                btn.innerText = "ACTIVATE ISOLATION";
+                btn.style.background = "var(--danger-color)";
+                banner.style.display = "none";
+                headStatus.style.color = "var(--success-color)";
+                headStatus.style.background = "rgba(0, 255, 136, 0.1)";
+                headStatus.style.borderColor = "rgba(0, 255, 136, 0.2)";
+                headStatus.innerHTML = '<div class="scanning-indicator"></div> DEFENSE SHIELD ACTIVE';
+            }
+        }
+
+        async function toggleIsolation() {
+            if (!currentHost) return;
+            const newState = document.getElementById('isolate-btn').innerText.includes("ACTIVATE");
+            try {
+                const response = await fetch(`/api/host/isolate?uuid_str=${currentHost.uuid}&enabled=${newState}`, { method: 'POST' });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    updateIsolationUI(newState);
+                }
+            } catch (e) {
+                console.error("Isolation error:", e);
+            }
+        }
+
+        function addAlert(alert) {
+            const div = document.createElement('div');
+            div.className = 'alert-item';
+            let forensicsHtml = '';
+            if (alert.details && alert.details.forensics) {
+                forensicsHtml = `<div class="alert-forensics" style="font-size: 0.75rem; color: var(--warning-color); margin-top: 4px; font-family: monospace;">${alert.details.forensics}</div>`;
+            }
+            div.innerHTML = `
+                <div class="severity-bar ${alert.severity}"></div>
+                <div class="alert-content">
+                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-time">${alert.timestamp}</div>
+                    ${forensicsHtml}
+                </div>
+            `;
+            alertsList.prepend(div);
+            
+            if (alert.severity === 'CRITICAL') {
+                incrementCount('threats-count');
+            }
+            if (alert.message && (alert.message.includes('Quarantined') || alert.message.includes('Ransomware'))) {
+                incrementCount('quarantine-count');
+            }
+            incrementCount('total-scanned');
+        }
+
+        function incrementCount(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let val = parseInt(el.innerText.toString().replace(/,/g, '')) || 0;
+            val += 1;
+            el.innerText = val.toLocaleString();
+        }
+
+        function clearAlerts() {
+            alertsList.innerHTML = '';
+        }
+
+        async function triggerOptimization() {
+            const optBtn = document.querySelector('button[onclick="triggerOptimization()"]');
+            const optStatus = document.getElementById('opt-status');
+            
+            optBtn.innerText = "OPTIMIZING...";
+            optBtn.style.opacity = "0.5";
+            
+            try {
+                const response = await fetch('/api/optimize', { method: 'POST' });
+                const result = await response.json();
+                
+                optStatus.style.display = 'block';
+                optStatus.innerText = `Cleaned ${result.cleanup.files_removed} files (${result.cleanup.freed_mb} MB). DNS Flushed.`;
+                setTimeout(() => { optStatus.style.display = 'none'; }, 5000);
+                
+                addAlert({
+                    message: `System Cache Purged. ${result.cleanup.freed_mb} MB reclaimed. DNS resolver cache flushed.`,
+                    severity: 'INFO',
+                    timestamp: new Date().toISOString()
+                });
+            } catch(e) {
+                console.error(e);
+            } finally {
+                optBtn.innerText = "RUN SYSTEM OPTIMIZATION";
+                optBtn.style.opacity = "1";
+            }
+        }
+
+        initFleet();
+    </script>
+</body>
+</html>

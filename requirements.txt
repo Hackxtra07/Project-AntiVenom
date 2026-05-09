@@ -1,0 +1,14 @@
+psutil
+yara-python
+fastapi
+uvicorn
+watchdog
+python-multipart
+jinja2
+websockets
+sqlite3-api
+aiohttp
+docker
+pefile
+python-magic
+oletools
